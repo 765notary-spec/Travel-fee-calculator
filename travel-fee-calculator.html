@@ -86,7 +86,7 @@ function calculateFee() {
             else { zone = 5; fee = "Custom Quote"; }
 
             document.getElementById("result").innerHTML =
-                `Zone ${zone}<br>Travel Fee: <strong>${fee}</strong><br><small>Distance: ${distance.toFixed(1)} miles</small>`;
+    `Zone ${zone}<br>Travel Fee: <strong>${fee}</strong>`;
         })
         .catch(() => {
             document.getElementById("result").innerText =
@@ -98,4 +98,5 @@ function calculateFee() {
 </body>
 
 </html>
+
 
