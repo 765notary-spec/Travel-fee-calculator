@@ -72,7 +72,7 @@ function calculateFee() {
     }
 
     // Distance API call
-    fetch(`https://www.zipcodeapi.com/rest/RIceXavNVB1lD4izLXdgwxIAeUvuDO7mJmMhnM0CxuR1luhBLSLOCWjZWhLVDBMb/distance.json/${baseZip}/${userZip}/mile`)
+    fetch(`https://www.zipcodeapi.com/rest/js-xin9wRpb0wTmWrP2UhTUbldilS6Wdm12auxRBcFQ9vnuNijyIejsyifSMSloW1LF/distance.json/${baseZip}/${userZip}/mile`)
         .then(response => response.json())
         .then(data => {
             const distance = data.distance;
@@ -98,3 +98,4 @@ function calculateFee() {
 </body>
 
 </html>
+
