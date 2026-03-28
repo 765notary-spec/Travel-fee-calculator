@@ -1,189 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>765 Notary Services – Nationwide Coverage Map</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <title>765 Notary Services – Nationwide Coverage</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+        #header {
+            background: #00875a;
+            color: white;
+            padding: 12px;
+            font-size: 20px;
+            text-align: center;
+        }
+        #state-name {
+            font-weight: bold;
+        }
+    </style>
 
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
-    #map { width: 100%; height: 600px; }
-    h2 { text-align: center; margin: 16px 0 8px; }
-    #map-status { text-align: center; color: #444; margin-bottom: 8px; }
-    .leaflet-popup-content button {
-      background: #0052cc;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .leaflet-popup-content button:hover {
-      background: #003f99;
-    }
-  </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 
 <body>
-  <h2>765 Notary Services – Nationwide Coverage</h2>
-  <div id="map-status">Click a state to view county-level coverage.</div>
-  <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div id="header">
+    765 Notary Services – Nationwide Coverage<br>
+    <span id="mapStatus">Click a state to view counties</span>
+</div>
 
-  <script>
-    const BOOKING_URL = "https://www.calendly.com/765notary";
+<div id="map"></div>
 
+<script>
+    const BOOKING_URL = "https://765notaryservices.com/book-online";
+
+    // ⭐ Your GeoJSON files
     const STATE_GEOJSON_URL = "data/us-states.geojson";
+    const COUNTY_GEOJSON_URL = "data/us-counties.geojson";
 
-    // Map state codes to county GeoJSON files
+    // ⭐ Map of state FIPS → same counties file
     const STATE_COUNTY_MAP = {
-      "AL": "data/al-counties.geojson",
-      "AK": "data/ak-counties.geojson",
-      "AZ": "data/az-counties.geojson",
-      "AR": "data/ar-counties.geojson",
-      "CA": "data/ca-counties.geojson",
-      "CO": "data/co-counties.geojson",
-      "CT": "data/ct-counties.geojson",
-      "DE": "data/de-counties.geojson",
-      "FL": "data/fl-counties.geojson",
-      "GA": "data/ga-counties.geojson",
-      "HI": "data/hi-counties.geojson",
-      "ID": "data/id-counties.geojson",
-      "IL": "data/il-counties.geojson",
-      "IN": "data/in-counties.geojson",
-      "IA": "data/ia-counties.geojson",
-      "KS": "data/ks-counties.geojson",
-      "KY": "data/ky-counties.geojson",
-      "LA": "data/la-counties.geojson",
-      "ME": "data/me-counties.geojson",
-      "MD": "data/md-counties.geojson",
-      "MA": "data/ma-counties.geojson",
-      "MI": "data/mi-counties.geojson",
-      "MN": "data/mn-counties.geojson",
-      "MS": "data/ms-counties.geojson",
-      "MO": "data/mo-counties.geojson",
-      "MT": "data/mt-counties.geojson",
-      "NE": "data/ne-counties.geojson",
-      "NV": "data/nv-counties.geojson",
-      "NH": "data/nh-counties.geojson",
-      "NJ": "data/nj-counties.geojson",
-      "NM": "data/nm-counties.geojson",
-      "NY": "data/ny-counties.geojson",
-      "NC": "data/nc-counties.geojson",
-      "ND": "data/nd-counties.geojson",
-      "OH": "data/oh-counties.geojson",
-      "OK": "data/ok-counties.geojson",
-      "OR": "data/or-counties.geojson",
-      "PA": "data/pa-counties.geojson",
-      "RI": "data/ri-counties.geojson",
-      "SC": "data/sc-counties.geojson",
-      "SD": "data/sd-counties.geojson",
-      "TN": "data/tn-counties.geojson",
-      "TX": "data/tx-counties.geojson",
-      "UT": "data/ut-counties.geojson",
-      "VT": "data/vt-counties.geojson",
-      "VA": "data/va-counties.geojson",
-      "WA": "data/wa-counties.geojson",
-      "WV": "data/wv-counties.geojson",
-      "WI": "data/wi-counties.geojson",
-      "WY": "data/wy-counties.geojson"
+        "01": COUNTY_GEOJSON_URL, "02": COUNTY_GEOJSON_URL, "04": COUNTY_GEOJSON_URL,
+        "05": COUNTY_GEOJSON_URL, "06": COUNTY_GEOJSON_URL, "08": COUNTY_GEOJSON_URL,
+        "09": COUNTY_GEOJSON_URL, "10": COUNTY_GEOJSON_URL, "11": COUNTY_GEOJSON_URL,
+        "12": COUNTY_GEOJSON_URL, "13": COUNTY_GEOJSON_URL, "15": COUNTY_GEOJSON_URL,
+        "16": COUNTY_GEOJSON_URL, "17": COUNTY_GEOJSON_URL, "18": COUNTY_GEOJSON_URL,
+        "19": COUNTY_GEOJSON_URL, "20": COUNTY_GEOJSON_URL, "21": COUNTY_GEOJSON_URL,
+        "22": COUNTY_GEOJSON_URL, "23": COUNTY_GEOJSON_URL, "24": COUNTY_GEOJSON_URL,
+        "25": COUNTY_GEOJSON_URL, "26": COUNTY_GEOJSON_URL, "27": COUNTY_GEOJSON_URL,
+        "28": COUNTY_GEOJSON_URL, "29": COUNTY_GEOJSON_URL, "30": COUNTY_GEOJSON_URL,
+        "31": COUNTY_GEOJSON_URL, "32": COUNTY_GEOJSON_URL, "33": COUNTY_GEOJSON_URL,
+        "34": COUNTY_GEOJSON_URL, "35": COUNTY_GEOJSON_URL, "36": COUNTY_GEOJSON_URL,
+        "37": COUNTY_GEOJSON_URL, "38": COUNTY_GEOJSON_URL, "39": COUNTY_GEOJSON_URL,
+        "40": COUNTY_GEOJSON_URL, "41": COUNTY_GEOJSON_URL, "42": COUNTY_GEOJSON_URL,
+        "44": COUNTY_GEOJSON_URL, "45": COUNTY_GEOJSON_URL, "46": COUNTY_GEOJSON_URL,
+        "47": COUNTY_GEOJSON_URL, "48": COUNTY_GEOJSON_URL, "49": COUNTY_GEOJSON_URL,
+        "50": COUNTY_GEOJSON_URL, "51": COUNTY_GEOJSON_URL, "53": COUNTY_GEOJSON_URL,
+        "54": COUNTY_GEOJSON_URL, "55": COUNTY_GEOJSON_URL, "56": COUNTY_GEOJSON_URL
     };
 
-    const mapStatus = document.getElementById("map-status");
-
-    const map = L.map("map").setView([39.5, -98.35], 4);
+    let map = L.map("map").setView([39.5, -98.35], 4);
+    let stateLayer;
+    let currentLayer = null;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 10
+        maxZoom: 18
     }).addTo(map);
 
-    let currentLayer = null;
-    let stateLayer = null;
+    const mapStatus = document.getElementById("mapStatus");
 
-    // Load U.S. states
+    // ⭐ Load States
     fetch(STATE_GEOJSON_URL)
-      .then(res => res.json())
-      .then(data => {
-        stateLayer = L.geoJSON(data, {
-          style: {
-            color: "#0052cc",
-            weight: 1,
-            fillColor: "#cfe0ff",
-            fillOpacity: 0.5
-          },
-          onEachFeature: (feature, layer) => {
-            const stateName = feature.properties.name;
-            const stateCode = feature.properties.STUSPS;
-
-            layer.bindTooltip(stateName);
-
-            layer.on("click", () => loadStateCounties(stateName, stateCode, layer));
-          }
-        }).addTo(map);
-
-        currentLayer = stateLayer;
-      });
-
-    function loadStateCounties(stateName, stateCode, layer) {
-      mapStatus.textContent = `Viewing counties in ${stateName}`;
-
-      const countyFile = STATE_COUNTY_MAP[stateCode];
-      if (!countyFile) {
-        alert(`Counties for ${stateName} not configured yet.`);
-        return;
-      }
-
-      if (currentLayer && currentLayer !== stateLayer) {
-        map.removeLayer(currentLayer);
-      }
-
-      map.fitBounds(layer.getBounds());
-
-      fetch(countyFile)
         .then(res => res.json())
         .then(data => {
-          const countyLayer = L.geoJSON(data, {
-            style: {
-              color: "#00875a",
-              weight: 1,
-              fillColor: "#b9f6ca",
-              fillOpacity: 0.5
-            },
-            onEachFeature: (feature, cLayer) => {
-              const countyName = feature.properties.NAME;
+            stateLayer = L.geoJSON(data, {
+                style: {
+                    color: "#004d40",
+                    weight: 2,
+                    fillColor: "#80cbc4",
+                    fillOpacity: 0.4
+                },
+                onEachFeature: (feature, layer) => {
+                    const stateName = feature.properties.NAME;
+                    const stateCode = feature.properties.STATEFP;
 
-              cLayer.bindTooltip(countyName);
+                    layer.bindTooltip(stateName);
 
-              cLayer.on("click", () => {
-                cLayer.bindPopup(`
-                  <strong>We can service ${countyName} County, ${stateName}</strong><br>
-                  with an online or in-person notary.<br><br>
-                  <button onclick="window.open('${BOOKING_URL}', '_blank')">Book Now</button>
-                `).openPopup();
-              });
-            }
-          }).addTo(map);
-
-          currentLayer = countyLayer;
+                    layer.on("click", () => {
+                        loadStateCounties(stateName, stateCode, layer);
+                    });
+                }
+            }).addTo(map);
         });
-    }
 
-    // Double-click to reset to U.S. map
-    map.on("dblclick", () => {
-      if (currentLayer !== stateLayer) {
-        map.removeLayer(currentLayer);
-        stateLayer.addTo(map);
-        currentLayer = stateLayer;
-        map.setView([39.5, -98.35], 4);
-        mapStatus.textContent = "Click a state to view county-level coverage.";
-      }
-    });
-  </script>
+    // ⭐ Load Counties for Selected State
+    function loadStateCounties(stateName, stateCode, layer) {
+        mapStatus.textContent = `Viewing counties in ${stateName}`;
+
+        const countyFile = STATE_COUNTY_MAP[stateCode];
+        if (!countyFile) {
+            alert(`Counties for ${stateName} not configured.`);
+            return;
+        }
+
+        if (currentLayer && currentLayer !== stateLayer) {
+            map.removeLayer(currentLayer);
+        }
+
+        map.fitBounds(layer.getBounds());
+
+        fetch(countyFile)
+            .then(res => res.json())
+            .then(data => {
+
+                // ⭐ FILTER counties by STATEFP
+                const filtered = data.features.filter(
+                    f => f.properties.STATEFP === stateCode
+                );
+
+                const countyLayer = L.geoJSON(filtered, {
+                    style: {
+                        color: "#00875a",
+                        weight: 1,
+                        fillColor: "#b9f6ca",
+                        fillOpacity: 0.5
+                    },
+                    onEachFeature: (feature, cLayer) => {
+                        const countyName = feature.properties.NAME;
+
+                        cLayer.bindTooltip(countyName);
+
+                        cLayer.on("click", () => {
+                            cLayer.bindPopup(`
+                                <strong>We can service ${countyName} County, ${stateName}</strong><br>
+                                with an online or in-person notary.<br><br>
+                                <button onclick="window.open('${BOOKING_URL}', '_blank')">Book Now</button>
+                            `).openPopup();
+                        });
+                    }
+                });
+
+                countyLayer.addTo(map);
+                currentLayer = countyLayer;
+            });
+    }
+</script>
+
 </body>
 </html>
