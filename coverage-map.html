@@ -39,7 +39,7 @@
 <div id="map"></div>
 
 <script>
-    const BOOKING_URL = "https://www.calendly.com/765notary";
+    const BOOKING_URL = "https://www.765notaryservices.com/#Buttons";
 
     // ⭐ Your GeoJSON files
     const STATE_GEOJSON_URL = "data/us-states.geojson";
@@ -82,9 +82,9 @@
         .then(data => {
             stateLayer = L.geoJSON(data, {
                 style: {
-                    color: "#004d40",
+                    color: "#BC8F8F",
                     weight: 2,
-                    fillColor: "#80cbc4",
+                    fillColor: "#BC8F8F",
                     fillOpacity: 0.4
                 },
                 onEachFeature: (feature, layer) => {
@@ -127,9 +127,9 @@
 
                 const countyLayer = L.geoJSON(filtered, {
                     style: {
-                        color: "#00875a",
+                        color: "#BC8F8F",
                         weight: 1,
-                        fillColor: "#b9f6ca",
+                        fillColor: "#BC8F8F",
                         fillOpacity: 0.5
                     },
                     onEachFeature: (feature, cLayer) => {
@@ -141,7 +141,14 @@
                             cLayer.bindPopup(`
                                 <strong>We can service ${countyName} County, ${stateName}</strong><br>
                                 with an online or in-person notary.<br><br>
-                                <button onclick="window.open('${BOOKING_URL}', '_blank')">Book Now</button>
+
+                                <button onclick="window.open('https://www.765notaryservices.com/#Buttons', '_blank')">
+                                    Book Now
+                                </button><br><br>
+
+                                <button onclick="window.open('https://seo.765notaryservices.com', '_blank')">
+                                    Browse by Service
+                                </button>
                             `).openPopup();
                         });
                     }
